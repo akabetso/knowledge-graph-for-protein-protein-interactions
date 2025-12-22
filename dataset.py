@@ -1,9 +1,21 @@
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
 import mygene
+
+class KGDataset(Dataset):
+    def __init__(self, heads, rels, tails):
+        assert len(heads) == len(rels) == len(tails)
+        self.heads = heads
+        self.rels = rels
+        self.tails = tails
+
+    def __len__(self):
+        return len(self.heads)
+
+    def __getitem__(self, idx):
+        return self.heads[idx], self.rels[idx], self.tails[idx]
 
 # create dataframe
 def get_triplet_data():
