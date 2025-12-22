@@ -33,6 +33,7 @@ def get_string_interaction_data(test_size = 0.25, valid_size = 0.15):
     """Here, clean and struncture the ppi dataset from string for KGE, k split param"""
 
     #path = "data/10090.protein.links.full.v12.0.txt"
+    print("Extracting STRING PPI interactorm and converting Ensembl id to gene names")
     path_kaggle = "/kaggle/input/string-ppi-data-mus-musculus/10090.protein.links.full.v12.0.txt"
     data = pd.read_csv(path_kaggle, sep = " ")
     data.columns

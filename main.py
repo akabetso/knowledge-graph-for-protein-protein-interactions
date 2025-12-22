@@ -2,6 +2,8 @@ import torch
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+from tqdm import tqdm
+from timeit import default_timer as timer
 
 import dataset
 import kgeModel
@@ -69,13 +71,19 @@ def train_model(model, train_loader,
                 num_entities, epochs, lr = 0.001) :
     optimizer = torch.optim.Adam(model.parameters(), lr = lr)
     train_losses = []
-    val_losses = []
+    accuracy = []
 
-    for epoch in range(epochs):
-        model.train()
-        total_loss = 0
+    def train_test_time (start: float, end: float) -> str:
+        run_time = end - start
+        return f"{run_time:.2f} seconds"
 
-        for batch_h, batch_r, batch_t in train_loader : 
+    model.train()
+    for epoch in tqdm(range(epochs)):
+        start_time = timer()
+        print(f"epoch: {epoch}\n---------------")
+        total_loss, total_acc = 0, 0
+
+        for batch, (batch_h, batch_r, batch_t) in enumerate(train_loader) : 
             # get positive scores
             pos_score = model.score(batch_h, batch_r, batch_t)
             
@@ -84,6 +92,9 @@ def train_model(model, train_loader,
             neg_score = model.score(neg_h, neg_r, neg_t)
 
             loss = torch.mean(torch.relu(1.0 - pos_score + neg_score))
+            acc = (pos_score > neg_score).float().mean()
+            total_acc += acc
+            acc = acc * 100
 
             optimizer.zero_grad()
             loss.backward()
@@ -91,9 +102,14 @@ def train_model(model, train_loader,
 
             total_loss += loss.item()
 
+            if epoch % 20000 == 0:
+                tqdm.write(f"Locked at {batch * len(batch_h)}/{len(train_loader.dataset)} samples")
+
         avg_loss = total_loss / len(train_loader)
         train_losses.append(avg_loss)
-        print(f"epoch {epoch} | loss {loss} | total loss {total_loss}")
+        end_time = timer()
+        run_time = train_test_time(start_time, end_time)
+        tqdm.write(f"epoch {epoch} | loss {loss} | total loss {total_loss} | accuracy = {acc:.2f}% | runtime : {run_time}")
 
     return train_losses
 
@@ -113,11 +129,12 @@ def main() :
     # val_h, val_r, val_t = convert_to_tensor(val_df, ent2id, rel2id, device)
     # test_h, test_r, test_t = convert_to_tensor(test_df, ent2id, rel2id, device)
 
+    global train_loader
     train_dataset = dataset.KGDataset(train_h, train_r, train_t)
     train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
     model = kgeModel.TransE(n_entities, n_relations, 50, device=device)
     train_losses = train_model(model, train_loader, 
-            n_entities, epochs=100, lr=0.01)
+            n_entities, epochs=50, lr=0.01)
     print(train_losses)
     return model
 
@@ -125,7 +142,6 @@ def main() :
 if __name__ == "__main__" :
    model = main()
 
-train, val, test = dataset.get_string_interaction_data(0.25, 0.5)
 extractor = embedding_extractor.EmbeddingExtractor(model, ent2id, rel2id, device)
 visualizer = embedding_visualization.EmbeddingVisualizer(extractor)
 fig = visualizer.plot_entity_embeddings(method = "tsne")
