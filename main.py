@@ -135,7 +135,7 @@ def main() :
     model = kgeModel.TransE(n_entities, n_relations, 50, device=device)
     print(f"dataloader size, batch size is 64 {len(train_loader.dataset)}")
     train_losses = train_model(model, train_loader, 
-            n_entities, epochs=50, lr=0.01)
+            n_entities, epochs=25, lr=0.01)
     print(train_losses)
     return model
 
