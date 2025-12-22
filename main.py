@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from timeit import default_timer as timer
+import os
 
 import dataset
 import kgeModel
@@ -145,6 +146,7 @@ if __name__ == "__main__" :
 
 extractor = embedding_extractor.EmbeddingExtractor(model, ent2id, rel2id, device)
 visualizer = embedding_visualization.EmbeddingVisualizer(extractor)
+print("plot entity embedding")
 fig = visualizer.plot_entity_embeddings(method = "tsne")
 fig.show()
 
@@ -155,7 +157,7 @@ train_triplets = list(zip(
     train_t.cpu().numpy()
 ))
 
-
+print("system querry")
 query_system = embedding_visualization.KnowledgeGraphQuery(model, extractor, 
                     train_triplets, device)
 query = query_system.kg
@@ -165,6 +167,7 @@ list(rel2id.keys())[0]
 predict_tail = query_system.predict_tail("Tnnt1", list(rel2id.keys())[0], 5)
 #analogy_query = query_system.analogy_query("anguilla", "neighbor", "cuba")
 
+print("classification system")
 classifier = embedding_visualization.EmbeddingClassifier(extractor)
 list(train_df["head"])[0:20]
 # dictt = {"slovakia": "country", "africa" : "continent", 
@@ -174,10 +177,12 @@ list(train_df["head"])[0:20]
 # X, y, names = classifier.prepare_classification_data(dictt)
 # clf, train_acc, test_acc = classifier.train_classifier(X, y)
 
+print("system analysis")
 analyzer = embedding_visualization.EmbeddingAnalyzer(extractor)
 labels, clusters, silhouette = analyzer.cluster_entities(n_clusters=3)
 analyzer.compute_embedding_statistics()
 analyzer.analyze_embedding_norms()
 plt.show()
 
-extractor.save_embeddings("/kaggle/working/knowledge-graph-for-protein-protein-interactions/")
+save_dir = '/kaggle/working/knowledge-graph-for-protein-protein-interactions/'
+extractor.save_embeddings(os.path.join(save_dir, 'embeddings.pickle'))
