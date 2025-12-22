@@ -36,9 +36,9 @@ class TransE(BaseKGEModel):
     def score(self, h_idx, r_idx, t_idx):
         h, r, t = self.get_embeddings(h_idx, r_idx, t_idx)
         x = h + r - t
-        print(f" x is :{x}")
+        #print(f" x is :{x}")
         dist = torch.norm(x, p=self.p_norm, dim=-1)
-        print(f"dist is : {dist}")
+        #print(f"dist is : {dist}")
         return self.gamma - dist
     
 class DistMult(BaseKGEModel):

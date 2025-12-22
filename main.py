@@ -1,13 +1,7 @@
-import pandas as pd
-import numpy as np
 import torch
-from torch import nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-import networkx as nx
-from pyvis.network import Network
-import pandas as pd
 
 import dataset
 import kgeModel
@@ -29,7 +23,7 @@ else: device = torch.device("cpu")
 print(f"device : {device}")
 
 # Get train val and test dataset.
-train, val, test = dataset.get_string_interaction_data(0.25, 0.5)
+#train, val, test = dataset.get_string_interaction_data(0.25, 0.5)
 
 def build_vocab(df_list): 
     entities = set()
@@ -42,7 +36,7 @@ def build_vocab(df_list):
     ent2id = {e : i for i, e in enumerate(sorted(entities))}
     rel2id = {r : i for i, r in enumerate(sorted(relations))}
     return ent2id, rel2id
-ent2id, rel2id = build_vocab([train, test, val])
+#ent2id, rel2id = build_vocab([train, test, val])
 
 # get mapings and convert data to tensor
 def convert_to_tensor(df, ent2id, rel2id,  device) :
@@ -54,7 +48,7 @@ def convert_to_tensor(df, ent2id, rel2id,  device) :
         torch.LongTensor(rels).to(device), \
         torch.LongTensor(tails).to(device)
 
-heads, rels, tails = convert_to_tensor(test, ent2id, rel2id, device)
+#heads, rels, tails = convert_to_tensor(test, ent2id, rel2id, device)
 
 # corrupt the files
 def negative_sample(h, r, t, num_entities) :
@@ -69,7 +63,7 @@ def negative_sample(h, r, t, num_entities) :
 
     return neg_h, r, neg_t
 
-nh, nr, nt = negative_sample(heads, rels, tails, len(ent2id))
+#nh, nr, nt = negative_sample(heads, rels, tails, len(ent2id))
 
 def train_model(model, train_loader, 
                 num_entities, epochs, lr = 0.001) :
@@ -103,7 +97,11 @@ def train_model(model, train_loader,
 
     return train_losses
 
+train_df, val_df, test_df = None, None, None
+ent2id, rel2id = None, None
 def main() :
+    print(f"working on device : {device}")
+    global train_df, val_df, test_df, ent2id, rel2id
     train_df, val_df, test_df = dataset.get_string_interaction_data(0.25, 0.15)#.get_triplet_data()
     ent2id, rel2id = build_vocab([train_df, val_df, test_df])
 
@@ -127,11 +125,12 @@ def main() :
 if __name__ == "__main__" :
    model = main()
 
+train, val, test = dataset.get_string_interaction_data(0.25, 0.5)
 extractor = embedding_extractor.EmbeddingExtractor(model, ent2id, rel2id, device)
 visualizer = embedding_visualization.EmbeddingVisualizer(extractor)
 fig = visualizer.plot_entity_embeddings(method = "tsne")
 fig.show()
-train_df, _, _ = dataset.get_triplet_data()
+
 train_h, train_r, train_t = convert_to_tensor(train_df, ent2id, rel2id, device)
 train_triplets = list(zip(
     train_h.cpu().numpy(),
