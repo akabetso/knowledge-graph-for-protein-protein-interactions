@@ -101,7 +101,7 @@ def train_model(model, train_loader,
             optimizer.step()
 
             total_loss += loss.item()
-            if batch % 20000 == 0:
+            if batch % 1000 == 0:
                 tqdm.write(f"Locked at {batch * len(batch_h)}/{len(train_loader.dataset)} samples")
         avg_loss = total_loss / len(train_loader)
         avg_acc = total_acc / len(train_loader)
@@ -133,7 +133,7 @@ def main() :
     train_dataset = dataset.KGDataset(train_h, train_r, train_t)
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
     model = kgeModel.TransE(n_entities, n_relations, 50, device=device)
-    print(f"len dload.dataset {len(train_loader.dataset)}")
+    print(f"dataloader size, batch size is 64 {len(train_loader.dataset)}")
     train_losses = train_model(model, train_loader, 
             n_entities, epochs=50, lr=0.01)
     print(train_losses)
