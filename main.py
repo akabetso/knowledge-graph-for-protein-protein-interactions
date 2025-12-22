@@ -101,12 +101,12 @@ def train_model(model, train_loader,
             optimizer.step()
 
             total_loss += loss.item()
-
-            if epoch % 20000 == 0:
+            if batch % 20000 == 0:
                 tqdm.write(f"Locked at {batch * len(batch_h)}/{len(train_loader.dataset)} samples")
-
         avg_loss = total_loss / len(train_loader)
+        avg_acc = total_acc / len(train_loader)
         train_losses.append(avg_loss)
+        accuracy.append(avg_acc)
         end_time = timer()
         run_time = train_test_time(start_time, end_time)
         tqdm.write(f"epoch {epoch} | loss {loss} | total loss {total_loss} | accuracy = {acc:.2f}% | runtime : {run_time}")
@@ -118,7 +118,7 @@ ent2id, rel2id = None, None
 def main() :
     print(f"working on device : {device}")
     global train_df, val_df, test_df, ent2id, rel2id
-    train_df, val_df, test_df = dataset.get_string_interaction_data(0.25, 0.15)#.get_triplet_data()
+    train_df, val_df, test_df = dataset.get_string_interaction_data(0.25, 0.15)#.get_triplet_data()#
     ent2id, rel2id = build_vocab([train_df, val_df, test_df])
 
     n_entities = len(ent2id)
@@ -131,8 +131,9 @@ def main() :
 
     global train_loader
     train_dataset = dataset.KGDataset(train_h, train_r, train_t)
-    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
     model = kgeModel.TransE(n_entities, n_relations, 50, device=device)
+    print(f"len dload.dataset {len(train_loader.dataset)}")
     train_losses = train_model(model, train_loader, 
             n_entities, epochs=50, lr=0.01)
     print(train_losses)
