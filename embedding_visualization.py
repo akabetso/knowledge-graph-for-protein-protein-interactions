@@ -50,6 +50,7 @@ class EmbeddingVisualizer :
                                figsize = (12, 8)) :
         """Plot entity embeddings in 2D"""
         embeddings = self.extractor.get_all_entity_embeddings()
+        print("extracted embeddings :")
         print(embeddings)
 
         # reduce dimensions
@@ -127,7 +128,7 @@ class KnowledgeGraphQuery :
         for h, r, t in triplets:
             h_name = self.extractor.id2ent[h]
             r_name = self.extractor.id2rel[r]
-            print(r_name)
+            #print(r_name)
             t_name = self.extractor.id2ent[t]
 
             self.kg[h_name][r_name].add(t_name)

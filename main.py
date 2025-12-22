@@ -159,23 +159,25 @@ train_triplets = list(zip(
 query_system = embedding_visualization.KnowledgeGraphQuery(model, extractor, 
                     train_triplets, device)
 query = query_system.kg
-query["cuba"]["locatedin"]
-similarity = query_system.find_similar_entities("cuba", 5)
+query["Tnnt1"]["intersectswith"]
+similarity = query_system.find_similar_entities("Tnnt1", 5)
 list(rel2id.keys())[0]
-predict_tail = query_system.predict_tail("cuba", list(rel2id.keys())[0], 5)
-analogy_query = query_system.analogy_query("anguilla", "neighbor", "cuba")
+predict_tail = query_system.predict_tail("Tnnt1", list(rel2id.keys())[0], 5)
+#analogy_query = query_system.analogy_query("anguilla", "neighbor", "cuba")
 
 classifier = embedding_visualization.EmbeddingClassifier(extractor)
 list(train_df["head"])[0:20]
-dictt = {"slovakia": "country", "africa" : "continent", 
- "niger"   : "country", 
- "paris"   : "city", "cuba": "country",
- "europe"  : "continent"}
-X, y, names = classifier.prepare_classification_data(dictt)
-clf, train_acc, test_acc = classifier.train_classifier(X, y)
+# dictt = {"slovakia": "country", "africa" : "continent", 
+#  "niger"   : "country", 
+#  "paris"   : "city", "cuba": "country",
+#  "europe"  : "continent"}
+# X, y, names = classifier.prepare_classification_data(dictt)
+# clf, train_acc, test_acc = classifier.train_classifier(X, y)
 
 analyzer = embedding_visualization.EmbeddingAnalyzer(extractor)
 labels, clusters, silhouette = analyzer.cluster_entities(n_clusters=3)
 analyzer.compute_embedding_statistics()
 analyzer.analyze_embedding_norms()
 plt.show()
+
+extractor.save_embeddings("/kaggle/working/knowledge-graph-for-protein-protein-interactions/")
