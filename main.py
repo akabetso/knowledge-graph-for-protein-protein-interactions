@@ -102,8 +102,8 @@ def train_model(model, train_loader,
             optimizer.step()
 
             total_loss += loss.item()
-            if batch % 1000 == 0:
-                tqdm.write(f"Locked at {batch * len(batch_h)}/{len(train_loader.dataset)} samples")
+            # if batch % 1000 == 0:
+            #     tqdm.write(f"Locked at {batch * len(batch_h)}/{len(train_loader.dataset)} samples")
         avg_loss = total_loss / len(train_loader)
         avg_acc = total_acc / len(train_loader)
         train_losses.append(avg_loss)

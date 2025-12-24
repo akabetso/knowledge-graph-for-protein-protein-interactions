@@ -404,30 +404,30 @@ class EmbeddingAnalyzer:
 
 
 
-train_triplets = [
-    ('Alice', 'likes', 'Bob'),
-    ('Alice', 'likes', 'Music'),
-    ('Bob',  'likes', 'Music'),
-    ('Bob',  'knows', 'Alice')
-]
+# train_triplets = [
+#     ('Alice', 'likes', 'Bob'),
+#     ('Alice', 'likes', 'Music'),
+#     ('Bob',  'likes', 'Music'),
+#     ('Bob',  'knows', 'Alice')
+# ]
 
-class KG:
-    def __init__(self, triples):
-        self.kg = defaultdict(lambda: defaultdict(set))
-        print(self.kg)
-        self._build_kg_structure(triples)
+# class KG:
+#     def __init__(self, triples):
+#         self.kg = defaultdict(lambda: defaultdict(set))
+#         print(self.kg)
+#         self._build_kg_structure(triples)
 
-    def _build_kg_structure(self, triples):
-        for h, r, t in triples:
-            self.kg[h][r].add(t)
+#     def _build_kg_structure(self, triples):
+#         for h, r, t in triples:
+#             self.kg[h][r].add(t)
 
-kg = KG(train_triplets)
-print(kg.kg)
+# kg = KG(train_triplets)
+# print(kg.kg)
 
-# demo lookups
-print(kg.kg['Alice']['likes'])   # {'Bob', 'Music'}
-print(kg.kg['Bob']['knows'])     # {'Alice'}
-print(kg.kg['Alice']['knows'])
+# # demo lookups
+# print(kg.kg['Alice']['likes'])   # {'Bob', 'Music'}
+# print(kg.kg['Bob']['knows'])     # {'Alice'}
+# print(kg.kg['Alice']['knows'])
 
 
 
